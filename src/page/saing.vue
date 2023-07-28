@@ -1,19 +1,23 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
-import { useLinkStore, type userListType } from '@/stores/link.ts';
+import { useLinkStore, type UserListType, type MsgType } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
 import saingPop from '@/components/saingPop.vue';
+import { useFileDialog } from '@vueuse/core'
+
 const route = useRoute()
 const linkStore = useLinkStore()
 const thisLink = linkStore.userList.find((d) => {
   return route.params.id == d.id
-}) as userListType
+}) as UserListType
 let tomsg = ref("")
 class peerMember {
   constructor() {
     thisLink.connForThey.off('data')
-    thisLink.connForThey.on('data', (data: any) => {
-      thisLink.msg.push({ text: data.toString(), index: thisLink.msg.length, type: "they" })
+    //@ts-ignore
+    thisLink.connForThey.on('data', (data: MsgType) => {
+      data.type="they"
+      thisLink.msg.push(data)
     });
 
     //连接断开监听
@@ -22,15 +26,18 @@ class peerMember {
       this.disconnected()
     })
   }
-  send(str: string) {
+  send(str: string, type?: "text" | "img", blob?: Blob) {
     if (str != "") {
       tomsg.value = ""
-      thisLink.connForThey.send(str)
-      thisLink.msg.push({
+      let msgObj= {
         text: str,
         index: thisLink.msg.length,
-        type: "my"
-      })
+        type: "my",
+        is: type ?? "text",
+        blob
+      } as any
+      thisLink.connForThey.send(msgObj)
+      thisLink.msg.push(msgObj)
     }
   }
   disconnected() {
@@ -38,13 +45,38 @@ class peerMember {
       thisLink.connForThey.off('close')
       thisLink.connForThey.off('data')
       thisLink.isDisconnected = true
-      thisLink.msg.push({ text: "<连接断开>", index: thisLink.msg.length, type: "sys" });
+      thisLink.msg.push({ text: "<连接断开>", index: thisLink.msg.length, type: "sys", is: "text" });
       thisLink.islink = false
       linkStore.endLink(thisLink.connForThey)
     }
   }
 }
 const player = new peerMember()
+
+let iconColor = ref("#e9e9eb")
+function uploadFile() {
+  //@ts-ignore
+  const { onChange, open, files } = useFileDialog()
+  open({
+    accept: 'image/*'
+  })
+  onChange(() => {
+    if (files.value && files.value.length == 1) {
+      let file = files.value[0]
+      if (file.type.includes('image/')) {
+        const fileReader = new FileReader()
+        fileReader.readAsBinaryString(file);
+        fileReader.onload = e => {
+          if (e.target) {
+            const md5 = (window as any).SparkMD5.hashBinary(e.target.result);
+            const bl = new Blob([file])
+            player.send(md5, "img", bl)
+          }
+        }
+      }
+    }
+  })
+}
 </script>
 
 <template>
@@ -55,10 +87,15 @@ const player = new peerMember()
     </el-header>
     <el-main class="main relative !pb-[13rem] ">
       <saingPop :thisLink="thisLink" />
-      <el-input spellcheck="false" placeholder="massage" v-model.trim="tomsg"
-        class=" !fixed bottom-10 right-0 !m-0 h-40 !border-l-0 z-0 !w-3/4" type="textarea"></el-input>
-      <el-button @click="player.send(tomsg)" class=" !fixed bottom-1 right-0 z-10 !m-0 h-9 w-3/4"
-        :disabled="!thisLink.islink">发送</el-button>
+      <div class=" fixed w-3/4 bottom-0 right-0 h-[13rem] bg-white">
+        <el-icon size="1.5rem" class=" !absolute z-30 right-2 top-2" @click="uploadFile">
+          <PictureFilled :color="iconColor" class=" hover:!text-[#79bbff] !transition-colors duration-500 ease-in-out" />
+        </el-icon>
+        <el-input spellcheck="false" placeholder="massage" v-model.trim="tomsg" class=" !m-0 h-40 !border-l-0 z-0 !w-full"
+          type="textarea" @mouseenter="iconColor = '#c8c9cc'" @mouseleave="iconColor = '#e9e9eb'"></el-input>
+        <el-button @click="player.send(tomsg)" class=" z-10 !m-0 h-9 w-full" :disabled="!thisLink.islink">发送</el-button>
+      </div>
+
     </el-main>
   </el-container>
 </template>

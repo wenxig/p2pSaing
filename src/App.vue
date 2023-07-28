@@ -25,8 +25,10 @@ function show(id: string, notreq: () => void, okreq: () => void) {
   })
 }
 
-let r=useRouter()
-r.push('/addlink')
+if (import.meta.env.DEV) {
+  let r = useRouter()
+  r.push('/addlink')
+}
 
 </script>
 

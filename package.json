@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only",
+    "build": "run-p type-check build-only && surge dist p2psaing.surge.sh",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.json --composite false"
@@ -14,6 +14,7 @@
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@types/lodash-es": "^4.17.8",
     "@vitejs/plugin-vue-jsx": "^3.0.1",
+    "@vueuse/core": "^10.2.1",
     "clipboard": "^2.0.11",
     "element-plus": "^2.3.8",
     "lodash-es": "^4.17.21",

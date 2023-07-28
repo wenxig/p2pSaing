@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 
 export const useLinkStore = defineStore('link', () => {
-  const userList: userListType[] = reactive([])
+  const userList: UserListType[] = reactive([])
   const peerObj = reactive(new Peer())
   const myId = ref("")
   let countOfOnConnection = 0
@@ -63,14 +63,17 @@ export const useLinkStore = defineStore('link', () => {
   }
   return { userList, peerObj, myId, onConnection, linkto, addToLinklist, endLink }
 })
-export type userListType = {
+export type UserListType = {
   id: string
-  msg: {
-    text: string
-    index: number
-    type: "my" | "they" | "sys"
-  }[],
+  msg: MsgType[],
   connForThey: DataConnection
   isDisconnected?: boolean
   islink?: boolean
+}
+export type MsgType = {
+  text: string
+  index: number
+  type: "my" | "they" | "sys",
+  is: "img" | "text",
+  blob?: Blob,
 }
