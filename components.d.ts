@@ -18,6 +18,8 @@ declare module 'vue' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    Input: typeof import('./src/components/input.vue')['default']
+    InputArea: typeof import('./src/components/inputArea.vue')['default']
     LeftBar: typeof import('./src/components/leftBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

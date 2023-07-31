@@ -30,8 +30,10 @@ export const useLinkStore = defineStore('link', () => {
       })
     }
   }
-  function linkto(id: string, yes: (id: string) => void, no: () => void): Function {
+  function linkto(id: string, yes: (id: string) => void, no: () => void): ()=>void {
     const connForThey = peerObj.connect(id)
+    console.log(connForThey);
+    
     //@ts-ignore
     connForThey.once("data", (d: { ok: boolean }) => {
       if (d.ok) {
