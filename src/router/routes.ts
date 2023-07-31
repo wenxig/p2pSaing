@@ -1,4 +1,5 @@
 import start from '@/page/start.vue';
+import addLink from '@/page/addLink.vue';
 const routes = [
   {
     path: "/",
@@ -10,7 +11,7 @@ const routes = [
   },
   {
     path:"/addLink",
-    component: () => import("@/page/addLink.vue")
+    component: addLink
   }
 ];
 export default routes;

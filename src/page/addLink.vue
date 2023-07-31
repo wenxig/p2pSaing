@@ -44,6 +44,7 @@ function link() {
     ElMessage.success('对方同意了连接')
     router.push(`/saing/${id}`)
     clearTimeout(waitingTimeout)
+    ElMessage("等待页面加载")
   }, () => {
     waiting.close()
     ElMessage.error('对方拒绝了连接')
@@ -63,14 +64,14 @@ function link() {
   <el-container>
     <el-header class="grid content-center bg-[#FAFCFF]">
       <el-tooltip effect="light" content="点击复制" placement="bottom-start">
-        <span ref="myIdSpan">
+        <span ref="myIdSpan" class="text-sm md:text-[1rem]">
           你的id: {{ LinkStore.myId }}
         </span>
       </el-tooltip>
     </el-header>
     <el-main>
       <el-input type="text" placeholder="id" v-model="linkId" spellcheck="false" class="mb-1"></el-input>
-      <el-button @click="link" class="w-1/4">连接</el-button>
+      <el-button @click="link" class="w-full md:w-1/4">连接</el-button>
     </el-main>
   </el-container>
 </template>

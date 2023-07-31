@@ -20,12 +20,7 @@ let imgSrcList: string[] = reactive([])
 function addimg(index: number): boolean {
   let b64 = ArrayBufferToBase64(props.thisLink.msg[index].blob as unknown as ArrayBuffer)
   if (b64) {
-    imgSrcList[index] = 'data:application/octet-stream;base64,'+b64
-    if ((window as any).SparkMD5.hashBinary(b64)== props.thisLink.msg[index].text) {
-      console.log(b64);
-    }else{
-      console.log("err");
-    }
+    imgSrcList[index] = 'data:application/octet-stream;base64,' + b64
   } else {
     blobToBase64(props.thisLink.msg[index].blob, (b64) => {
       imgSrcList[index] = b64
@@ -54,7 +49,13 @@ function ArrayBufferToBase64(buffer: ArrayBuffer) {
       :class="{ 'bg-[#a0cfff] before:bg-[#a0cfff] right-0 before:right-0 before:translate-x-1/2': msg.type == 'my', 'bg-[#ecf5ff] before:bg-[#ecf5ff] left-0 before:left-0 before:-translate-x-1/2': msg.type == 'they' }">
       {{ msg.text }}
     </div>
-    <img v-else-if="msg.is == 'img' && msg.type == 'my' && addimg(index)" :src="imgSrcList[index]" />
-    <img v-else-if="msg.is == 'img' && msg.type == 'they' && addimg(index)" :src="imgSrcList[index]" />
+    <el-image v-else-if="msg.is == 'img' && addimg(index)" :src="imgSrcList[index]" fit="contain" class=" w-[35%] rounded-xl">
+      <template #error>
+        <div
+          class=" flex justify-center items-center w-full h-full bg-[var(--el-fill-color-light)] text-[var(--el-text-color-secondary)] text-[30px]">
+          <el-icon size="30px"><Picture /></el-icon>
+        </div>
+      </template>
+    </el-image>
   </div>
 </template>

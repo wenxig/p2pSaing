@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import { ref, inject, Ref } from 'vue';
 import { useLinkStore, type UserListType, type MsgType } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
 import saingPop from '@/components/saingPop.vue';
@@ -27,6 +27,7 @@ class peerMember {
     })
   }
   send(str: string, type?: "text" | "img", blob?: Blob) {
+    str=str.trim()
     if (str != "") {
       tomsg.value = ""
       let msgObj= {
@@ -77,21 +78,28 @@ function uploadFile() {
     }
   })
 }
+
+const leftBarShow = inject('leftBarShow') as Ref<boolean>
+function showLeftbar(){
+  if(screen.availWidth < 768){
+    leftBarShow.value=true
+  }
+}
 </script>
 
 <template>
   <el-container>
-    <el-header class=" flex items-center relative bg-[#FAFCFF]">
+    <el-header class=" flex items-center relative bg-[#FAFCFF] text-sm md:text-lg" @click="showLeftbar()">
       {{ thisLink.id }}
-      <el-button class=" absolute right-2" type="warning" plain @click="player.disconnected()">结束连接</el-button>
+      <el-button class=" absolute right-2" type="warning" plain @click.stop="player.disconnected()" :disabled="thisLink.isDisconnected">结束连接</el-button>
     </el-header>
     <el-main class="main relative !pb-[13rem] ">
       <saingPop :thisLink="thisLink" />
-      <div class=" fixed w-3/4 bottom-0 right-0 h-[13rem] bg-white">
+      <div class=" fixed w-full md:!w-3/4 bottom-0 right-0 h-[12rem] md:h-[13rem] bg-white">
         <el-icon size="1.5rem" class=" !absolute z-30 right-2 top-2" @click="uploadFile">
           <PictureFilled :color="iconColor" class=" hover:!text-[#79bbff] !transition-colors duration-500 ease-in-out" />
         </el-icon>
-        <el-input spellcheck="false" placeholder="massage" v-model.trim="tomsg" class=" !m-0 h-40 !border-l-0 z-0 !w-full"
+        <el-input spellcheck="false" placeholder="massage" v-model="tomsg" class=" !m-0 h-40 !border-l-0 z-0 !w-full"
           type="textarea" @mouseenter="iconColor = '#c8c9cc'" @mouseleave="iconColor = '#e9e9eb'"></el-input>
         <el-button @click="player.send(tomsg)" class=" z-10 !m-0 h-9 w-full" :disabled="!thisLink.islink">发送</el-button>
       </div>
