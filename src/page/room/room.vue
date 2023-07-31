@@ -54,7 +54,6 @@ class peerMember extends linker {
       this.connForThey.off('data')
       this.isDisconnected = true
       this.msg.push({ text: "<连接断开>", index: this.msg.length, type: "sys", is: "text" });
-      this.islink = false
       this.endLink(this.connForThey)
     }
   }

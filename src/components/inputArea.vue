@@ -39,7 +39,7 @@ function uploadFile() {
       <PictureFilled :color="iconColor" class=" hover:!text-[#79bbff] !transition-colors duration-500 ease-in-out" />
     </el-icon>
     <el-input spellcheck="false" placeholder="massage" v-model="player.tomsg.value"
-      class=" !m-0 h-40 !border-l-0 z-0 !w-full" type="textarea" @mouseenter="iconColor = '#c8c9cc'"
+      class=" !m-0 h-40 !border-l-0 z-0 !w-full" @mouseenter="iconColor = '#c8c9cc'"
       @mouseleave="iconColor = '#e9e9eb'"></el-input>
     <el-button @click="player.send(player.tomsg.value)" class=" z-10 !m-0 h-9 w-full"
       :disabled="player.islink">发送</el-button>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, inject, Ref } from 'vue';
+import { ref, inject, Ref, nextTick } from 'vue';
 import { useLinkStore, type UserListType, type MsgType } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
 import saingPop from '@/components/saingPop.vue';
@@ -45,6 +45,16 @@ class peerMember extends linker {
       } as any
       this.connForThey.send(msgObj)
       this.msg.push(msgObj)
+      nextTick(() => {
+        const sayer = document.getElementById("saingMain")
+        if (sayer) {
+          sayer.scroll({
+            top: sayer.clientHeight,
+            left: 0,
+            behavior: 'smooth'
+          })
+        }
+      })
     }
   }
   public disconnected() {
@@ -77,7 +87,7 @@ function showLeftbar() {
       <el-button class=" absolute right-2" type="warning" plain @click.stop="player.disconnected()"
         :disabled="thisLink.isDisconnected">结束连接</el-button>
     </el-header>
-    <el-main class="main relative !pb-[13rem] ">
+    <el-main class="main relative !pb-[13rem] " id="saingMain">
       <saingPop :thisLink="thisLink" />
       <inputArea :player="player" />
     </el-main>

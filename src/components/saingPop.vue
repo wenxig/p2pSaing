@@ -2,7 +2,7 @@
 import { type UserListType } from '@/stores/link.ts';
 import { reactive } from 'vue';
 const props = defineProps<{
-  thisLink: UserListType
+  thisLink: UserListType,
 }>()
 function blobToBase64(blob: Blob | undefined, callback: (base64: string) => void) {
   if (blob) {

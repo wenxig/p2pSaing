@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { Server } from '@/stores/room.ts';
 import { useLinkStore } from '@/stores/link.ts';
 import { useRouter } from 'vue-router';
@@ -16,19 +16,19 @@ function link() {
 }
 
 function newServer() {
-  const server = new Server()
   const wattingReadyMsg = ElMessage({
     message: "等待服务程序启动",
     duration: 0
   })
-  const stop = watch(server.isReady, () => {
+  new Server((id) => {
     wattingReadyMsg.close()
     stop()
-    linkStore.linkto(linkId.value, () => {
-      router.push(`/room/${server.id}`)
+    linkStore.linkto(id, () => {
+      router.push(`/room/${id}`)
       ElMessage("等待页面加载")
     }, () => { })
   })
+
 }
 
 </script>

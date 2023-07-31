@@ -33,20 +33,24 @@ export const useLinkStore = defineStore('link', () => {
   }
   function linkto(id: string, yes: (id: string) => void, no: () => void): () => void {
     const connForThey = peerObj.connect(id)
-    //@ts-ignore
-    connForThey.once("data", (d: { ok: boolean, server?: boolean }) => {
-      if (d.ok) {
-        if (!d.server) {
-          addToLinklist(connForThey)
+    connForThey.once('open', () => {
+      //@ts-ignore
+      connForThey.once("data", (d: { ok: boolean, server?: boolean }) => {
+        console.log('on data');
+        if (d.ok) {
+          if (!d.server) {
+            addToLinklist(connForThey)
+          } else {
+            addToRoomlist(connForThey)
+          }
+          yes(id)
         } else {
-          addToRoomlist(connForThey)
+          connForThey.close()
+          no()
         }
-        yes(id)
-      } else {
-        connForThey.close()
-        no()
-      }
+      })
     })
+
     return () => {
       connForThey.off("data")
       connForThey.close()
