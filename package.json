@@ -4,10 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only && surge dist p2psaing.surge.sh",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.json --composite false"
+    "build": "vue-tsc --noEmit&&vite build && surge dist p2psaing.surge.sh",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",

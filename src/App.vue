@@ -2,6 +2,10 @@
 import leftBar from '@/components/leftBar.vue';
 import { ElNotification } from 'element-plus';
 import { provide, ref } from 'vue';
+import { useLinkStore } from '@/stores/link.ts';
+const linkStore = useLinkStore()
+import { useRouter } from 'vue-router';
+const router=useRouter()
 provide("requitPleses", show)
 function show(id: string, notreq: () => void, okreq: () => void) {
   let notificationEl = (<>
@@ -28,6 +32,15 @@ function show(id: string, notreq: () => void, okreq: () => void) {
 let leftBarShow = ref(false)
 provide('leftBarShow', leftBarShow)
 
+
+linkStore.onConnection((id, yes, no) => {
+  show(id, () => {
+    no()
+  }, () => {
+    yes()
+    router.push(`/link/${id}`)
+  })
+})
 </script>
 
 <template>

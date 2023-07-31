@@ -4,6 +4,7 @@ import { reactive, ref } from 'vue'
 
 export const useLinkStore = defineStore('link', () => {
   const userList: UserListType[] = reactive([])
+  const roomList: UserListType[] = reactive([])
   const peerObj = reactive(new Peer())
   const myId = ref("")
   let countOfOnConnection = 0
@@ -30,14 +31,16 @@ export const useLinkStore = defineStore('link', () => {
       })
     }
   }
-  function linkto(id: string, yes: (id: string) => void, no: () => void): ()=>void {
+  function linkto(id: string, yes: (id: string) => void, no: () => void): () => void {
     const connForThey = peerObj.connect(id)
-    console.log(connForThey);
-    
     //@ts-ignore
-    connForThey.once("data", (d: { ok: boolean }) => {
+    connForThey.once("data", (d: { ok: boolean, server?: boolean }) => {
       if (d.ok) {
-        addToLinklist(connForThey)
+        if (!d.server) {
+          addToLinklist(connForThey)
+        } else {
+          addToRoomlist(connForThey)
+        }
         yes(id)
       } else {
         connForThey.close()
@@ -58,12 +61,21 @@ export const useLinkStore = defineStore('link', () => {
       isDisconnected: false
     })
   }
+  function addToRoomlist(connForThey: DataConnection) {
+    roomList.push({
+      id: connForThey.peer,
+      msg: [],
+      connForThey,
+      islink: true,
+      isDisconnected: false
+    })
+  }
   function endLink(connForThey: DataConnection) {
     connForThey.close()
     peerObj.off("connection")
     countOfOnConnection = 0
   }
-  return { userList, peerObj, myId, onConnection, linkto, addToLinklist, endLink }
+  return { roomList, userList, peerObj, myId, onConnection, linkto, addToLinklist, endLink }
 })
 export type UserListType = {
   id: string
