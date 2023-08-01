@@ -1,64 +1,61 @@
 <script setup lang="ts">
-import { ref, inject, Ref } from 'vue';
-import { useLinkStore, type UserListType, type MsgType } from '@/stores/link.ts';
+import { inject, nextTick, ref, Ref } from 'vue';
+import { useLinkStore } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
 import saingPop from '@/components/saingPop.vue';
-import { linker } from '@/assets/linker';
+import { linker as Linker } from '@/assets/linker';
 import inputArea from '@/components/inputArea.vue';
+import { Room } from '@/room';
 const route = useRoute()
 const linkStore = useLinkStore()
-class peerMember extends linker {
-  thisLink = linkStore.userList.find((d) => {
-    return route.params.id == d.id
-  }) as UserListType
+const thisRoom = linkStore.roomList.find((v) => {
+  return v.id == route.params.id
+})
 
-  connForThey = this.thisLink.connForThey
+class Roomer extends Linker {
+  connForThey = thisRoom.connForThey
+  islink?: boolean | undefined;
+  id = route.params.id
   tomsg = ref("")
-  msg = this.thisLink.msg
-  isDisconnected = this.thisLink.isDisconnected as boolean
-  islink = false
-  endLink = useLinkStore().endLink
+  msg = thisRoom.msg
   constructor() {
-    super()
+    super();
     this.connForThey.off('data')
     //@ts-ignore
-    this.connForThey.on('data', (data: MsgType) => {
-      data.type = "they"
+    this.connForThey.on('data', (data: Room.MsgType) => {
+      data.is = 'they'
       this.msg.push(data)
     });
-
-    //连接断开监听
-    this.connForThey.off('close')
-    this.connForThey.once("close", () => {
-      this.disconnected()
-    })
   }
   public send(str: string, type?: "text" | "img", blob?: Blob) {
-    str = str.trim()
-    if (str != "") {
-      this.tomsg.value = ""
+    str = str.trim();
+    if (str !== "") {
       let msgObj = {
-        text: str,
-        index: this.msg.length,
-        type: "my",
-        is: type ?? "text",
+        msg: str,
+        time: new Date(),
+        type: type ?? "text",
+        is: "my",
         blob
-      } as any
-      this.connForThey.send(msgObj)
-      this.msg.push(msgObj)
+      } as Room.MsgType;
+      this.connForThey.send(msgObj);
+      this.msg.push(msgObj);
+      nextTick(() => {
+        const sayer = document.getElementById("saingMain");
+        sayer?.scroll({
+          top: sayer.clientHeight,
+          left: 0,
+          behavior: 'smooth'
+        });
+      });
     }
+    this.tomsg.value = "";
+    nextTick(() => this.tomsg.value = "");
   }
   public disconnected() {
-    if (!this.isDisconnected) {
-      this.connForThey.off('close')
-      this.connForThey.off('data')
-      this.isDisconnected = true
-      this.msg.push({ text: "<连接断开>", index: this.msg.length, type: "sys", is: "text" });
-      this.endLink(this.connForThey)
-    }
+    alert()
   }
 }
-const player = new peerMember()
+const roomer = new Roomer()
 
 const leftBarShow = inject('leftBarShow') as Ref<boolean>
 function showLeftbar() {
@@ -72,13 +69,12 @@ function showLeftbar() {
 <template>
   <el-container>
     <el-header class=" flex items-center relative bg-[#FAFCFF] text-sm md:text-lg" @click="showLeftbar()">
-      {{ player.thisLink.id }}
-      <el-button class=" absolute right-2" type="warning" plain @click.stop="player.disconnected()"
-        :disabled="player.thisLink.isDisconnected">结束连接</el-button>
+      {{ roomer.id }}
+      <el-button class=" absolute right-2" type="warning" plain @click.stop="roomer.disconnected()">结束连接</el-button>
     </el-header>
     <el-main class="main relative !pb-[13rem] ">
-      <saingPop :thisLink="player.thisLink" />
-      <inputArea :player="player"/>
+      <saingPop :msg="thisRoom.msg" />
+      <inputArea :player="roomer" />
     </el-main>
   </el-container>
 </template>

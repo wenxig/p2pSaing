@@ -40,9 +40,9 @@ function uploadFile() {
     </el-icon>
     <el-input spellcheck="false" placeholder="massage" v-model="player.tomsg.value"
       class=" !m-0 h-40 !border-l-0 z-0 !w-full" @mouseenter="iconColor = '#c8c9cc'"
-      @mouseleave="iconColor = '#e9e9eb'"></el-input>
+      @mouseleave="iconColor = '#e9e9eb'" type="textarea" @keydown.enter="player.send(player.tomsg.value)"></el-input>
     <el-button @click="player.send(player.tomsg.value)" class=" z-10 !m-0 h-9 w-full"
-      :disabled="player.islink">发送</el-button>
+      :disabled="player.islink??false">发送</el-button>
   </div>
 </template>
 

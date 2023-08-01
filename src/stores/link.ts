@@ -1,10 +1,12 @@
+import { Link } from '@/link'
+import { Room } from '@/room'
 import Peer, { type DataConnection } from 'peerjs'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 
 export const useLinkStore = defineStore('link', () => {
-  const userList: UserListType[] = reactive([])
-  const roomList: UserListType[] = reactive([])
+  const userList: Link.RoomListType[] = reactive([])
+  const roomList:Room.RoomListType[] = reactive([])
   const peerObj = reactive(new Peer())
   const myId = ref("")
   let countOfOnConnection = 0
@@ -31,17 +33,20 @@ export const useLinkStore = defineStore('link', () => {
       })
     }
   }
-  function linkto(id: string, yes: (id: string) => void, no: () => void): () => void {
+  function linkto(id: string, yes: (id: string) => void, no: () => void, isRoom?: boolean): () => void {
     const connForThey = peerObj.connect(id)
     connForThey.once('open', () => {
+      if (isRoom) {
+        connForThey.send({ type: 'join' })
+      }
       //@ts-ignore
       connForThey.once("data", (d: { ok: boolean, server?: boolean }) => {
-        console.log('on data');
+        alert('on data', d);
         if (d.ok) {
-          if (!d.server) {
-            addToLinklist(connForThey)
-          } else {
+          if (d.server) {
             addToRoomlist(connForThey)
+          } else {
+            addToLinklist(connForThey)
           }
           yes(id)
         } else {
@@ -69,9 +74,7 @@ export const useLinkStore = defineStore('link', () => {
     roomList.push({
       id: connForThey.peer,
       msg: [],
-      connForThey,
-      islink: true,
-      isDisconnected: false
+      connForThey
     })
   }
   function endLink(connForThey: DataConnection) {
@@ -81,17 +84,3 @@ export const useLinkStore = defineStore('link', () => {
   }
   return { roomList, userList, peerObj, myId, onConnection, linkto, addToLinklist, endLink }
 })
-export type UserListType = {
-  id: string
-  msg: MsgType[],
-  connForThey: DataConnection
-  isDisconnected?: boolean
-  islink?: boolean
-}
-export type MsgType = {
-  text: string
-  index: number
-  type: "my" | "they" | "sys",
-  is: "img" | "text",
-  blob?: Blob,
-}

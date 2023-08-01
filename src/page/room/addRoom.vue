@@ -12,7 +12,7 @@ function link() {
   linkStore.linkto(linkId.value, (id) => {
     router.push(`/room/${id}`)
     ElMessage("等待页面加载")
-  }, () => { })
+  }, () => { },true)
 }
 
 function newServer() {
@@ -26,7 +26,7 @@ function newServer() {
     linkStore.linkto(id, () => {
       router.push(`/room/${id}`)
       ElMessage("等待页面加载")
-    }, () => { })
+    }, () => { alert("no") }, true)
   })
 
 }

@@ -1,7 +1,5 @@
 <script setup lang='ts'>
 import { ElMessage } from 'element-plus'
-import { useLinkStore } from '@/stores/link.ts';
-useLinkStore()
 let isWebrtcOk = false
 try {
   //@ts-ignore
@@ -14,7 +12,7 @@ try {
     try {
       isWebrtcOk = !!RTCPeerConnection
     } catch (error) {
-      isWebrtcOk=false
+      isWebrtcOk = false
     }
   }
 }

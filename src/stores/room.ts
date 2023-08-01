@@ -1,3 +1,4 @@
+import { Room } from '@/room'
 import Peer, { type DataConnection } from 'peerjs'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
@@ -6,15 +7,14 @@ export const useRoomStore = defineStore('room', () => {
   const serverList: Server[] = reactive([])
   return { serverList }
 })
+
 let st = useRoomStore()
 export class Server {
   id?: string
   peerObj: Peer
   isReady = ref(false)
-  allConn: Set<DataConnection> = reactive(new Set())
+  allConn: DataConnection[] = reactive([])
   constructor(open: (id: string) => void, id?: string) {
-    //@ts-ignore
-    st.serverList.push(this)
     if (id && id.startsWith('2-')) {
       this.peerObj = new Peer(id)
       this.id = id
@@ -28,14 +28,27 @@ export class Server {
       this.isReady.value = true
       this.id = id
       this.peerObj.on('connection', (conn) => {
-        conn.send({
-          ok: true,
-          server: true
+        conn.once('data', (d: any) => {
+          const data = d as { type: string }
+          if (data.type == 'join') { //请求加入消息判断
+            conn.send({
+              ok: true,
+              server: true
+            })
+            conn.once('close', () => this.allConn.splice(this.allConn.indexOf(conn), 1))
+            this.allConn.push(conn)
+            conn.on("data", (d) => this.broadcast(d as Room.MsgType, conn))
+          }
         })
-        conn.once('close', () => this.allConn.delete(conn))
-        this.allConn.add(conn)
       })
+      //@ts-ignore
+      st.serverList.push(this)
       open(id)
+    })
+  }
+  public broadcast(d: Room.MsgType, unbroadcast: DataConnection) {
+    this.allConn.forEach((v) => {
+      if (unbroadcast.peer != v.peer) v.send(d)
     })
   }
 }

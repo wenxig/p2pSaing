@@ -9,13 +9,13 @@ const linkStore = useLinkStore()
 
 <template>
   <el-main class=" !p-0 md:!pl-[20px] md:!pr-[20px] md:!pt-[20px]">
-    <el-card shadow="never" class=" !p-0 mb-2" v-for="(conn, index) in linkStore.userList" :key="index"
+    <el-card shadow="never" class=" !p-0 mb-1" v-for="(conn, index) in linkStore.userList" :key="index"
       :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : conn.isDisconnected ? '#E4E7ED' : '' }"
       @click="$emit('click', void $router.push(`/link/${conn.id}`))">{{ conn.id }}</el-card>
-    <el-button icon="Plus" class=" w-full !h-10 mt-2" @click="$emit('click', void $router.push('/link'))">发起连接</el-button>
+    <el-button icon="Plus" class=" w-full !h-10 mt-2 mb-1" @click="$emit('click', void $router.push('/link'))">发起连接</el-button>
 
-    <el-card shadow="never" class=" !p-0 mb-2" v-for="(conn, index) in linkStore.roomList" :key="index"
-      :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : conn.isDisconnected ? '#E4E7ED' : '' }"
+    <el-card shadow="never" class=" !p-0 mb-1 mt-3" v-for="(conn, index) in linkStore.roomList" :key="index"
+      :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : '' }"
       @click="$emit('click', void $router.push(`/link/${conn.id}`))">{{ conn.id }}</el-card>
 
     <el-button icon="Plus" class=" w-full !h-10 mt-2 !ml-0"

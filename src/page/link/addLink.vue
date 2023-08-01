@@ -1,11 +1,11 @@
 <script setup lang='ts'>
 import { ref, onMounted } from 'vue';
 import { useLinkStore } from '@/stores/link.ts';
+import ClipboardJS from 'clipboard';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus'
-import ClipboardJS from 'clipboard';
-const LinkStore = useLinkStore()
 const router = useRouter()
+const LinkStore = useLinkStore()
 let linkId = ref("")
 let myIdSpan = ref<HTMLSpanElement | null>(null)
 onMounted(() => {
@@ -24,28 +24,27 @@ function link() {
     duration: 0
   })
   let waitingTimeout = setTimeout(() => {
-    waiting.close()
     ElMessage.error('等待连接超时')
-    endWaitingLink()
+    endWite()
   }, 10000);
   let endWaitingLink = LinkStore.linkto(linkId.value, (id) => {
-    waiting.close()
     ElMessage.success('对方同意了连接')
-    router.push(`/link/${id}`)
-    clearTimeout(waitingTimeout)
     ElMessage("等待页面加载")
+    router.push(`/link/${id}`)
+    endWite()
   }, () => {
-    waiting.close()
     ElMessage.error('对方拒绝了连接')
-    clearTimeout(waitingTimeout)
+    endWite()
   })
 
   LinkStore.peerObj.once("error", () => {
-    waiting.close()
     ElMessage.error('连接失败')
+  })
+  const endWite = () => {
+    waiting.close()
     clearTimeout(waitingTimeout)
     endWaitingLink()
-  })
+  }
 }
 </script>
 
