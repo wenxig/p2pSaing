@@ -99,12 +99,6 @@ export default defineConfig({
       ],
     },
   },
-  server: {
-    host: true,
-    proxy: {
-      "/api": "https://www.jmapinode1.cc",
-    },
-  },
   build: {
     terserOptions: {
       //打包后移除console和注释
