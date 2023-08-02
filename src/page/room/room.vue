@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { inject, nextTick, ref, Ref } from 'vue';
-import { useLinkStore } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
 import saingPop from '@/components/saingPop.vue';
 import { linker as Linker } from '@/assets/linker';
 import inputArea from '@/components/inputArea.vue';
-import { Room } from '@/room';
+import { Room } from '@t/room';
+import {useRoomStore} from '@/stores/room';
 const route = useRoute()
-const linkStore = useLinkStore()
-const thisRoom = linkStore.roomList.find((v) => {
+const roomStore = useRoomStore()
+const thisRoom = roomStore.roomList.find((v) => {
   return v.id == route.params.id
 })
 
@@ -78,3 +78,4 @@ function showLeftbar() {
     </el-main>
   </el-container>
 </template>
+@/types/room

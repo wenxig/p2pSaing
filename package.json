@@ -23,10 +23,12 @@
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
+    "@iconify-json/ep": "^1.1.11",
     "@tsconfig/node18": "^18.2.0",
     "@types/lodash-es": "^4.17.8",
     "@types/node": "^18.17.0",
     "@types/spark-md5": "^3.0.2",
+    "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/tsconfig": "^0.4.0",
     "autoprefixer": "^10.4.14",
@@ -35,8 +37,10 @@
     "postcss-pxtorem": "^6.0.0",
     "sass": "^1.64.1",
     "tailwindcss": "^3.3.3",
+    "terser": "^5.19.2",
     "typescript": "~5.1.6",
     "unplugin-auto-import": "^0.16.6",
+    "unplugin-icons": "^0.16.5",
     "unplugin-vue-components": "^0.25.1",
     "vite": "^4.4.6",
     "vue-tsc": "^1.8.6"

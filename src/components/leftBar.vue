@@ -3,7 +3,9 @@ defineEmits<{
   (e: 'click', v: void): void
 }>()
 import { useLinkStore } from '@/stores/link.ts';
+import { useRoomStore } from '@/stores/room';
 const linkStore = useLinkStore()
+const roomStore = useRoomStore()
 
 </script>
 
@@ -12,9 +14,10 @@ const linkStore = useLinkStore()
     <el-card shadow="never" class=" !p-0 mb-1" v-for="(conn, index) in linkStore.userList" :key="index"
       :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : conn.isDisconnected ? '#E4E7ED' : '' }"
       @click="$emit('click', void $router.push(`/link/${conn.id}`))">{{ conn.id }}</el-card>
-    <el-button icon="Plus" class=" w-full !h-10 mt-2 mb-1" @click="$emit('click', void $router.push('/link'))">发起连接</el-button>
+    <el-button icon="Plus" class=" w-full !h-10 mt-2 mb-1"
+      @click="$emit('click', void $router.push('/link'))">发起连接</el-button>
 
-    <el-card shadow="never" class=" !p-0 mb-1 mt-3" v-for="(conn, index) in linkStore.roomList" :key="index"
+    <el-card shadow="never" class=" !p-0 mb-1 mt-3" v-for="(conn, index) in roomStore.roomList" :key="index"
       :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : '' }"
       @click="$emit('click', void $router.push(`/link/${conn.id}`))">{{ conn.id }}</el-card>
 

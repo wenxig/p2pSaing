@@ -1,20 +1,26 @@
-import { Room } from '@/room'
+import { Room } from '@t/room'
 import Peer, { type DataConnection } from 'peerjs'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
-
 export const useRoomStore = defineStore('room', () => {
   const serverList: Server[] = reactive([])
-  return { serverList }
+  const roomList: Room.RoomListType[] = reactive([])
+  function addToRoomlist(connForThey: DataConnection) {
+    roomList.push({
+      id: connForThey.peer,
+      msg: [],
+      connForThey
+    })
+  }
+  return { serverList, addToRoomlist, roomList }
 })
 
-let st = useRoomStore()
 export class Server {
   id?: string
   peerObj: Peer
   isReady = ref(false)
   allConn: DataConnection[] = reactive([])
-  constructor(open: (id: string) => void, id?: string) {
+  constructor(open: (id: string) => void, roomStore: any, id?: string) {
     if (id && id.startsWith('2-')) {
       this.peerObj = new Peer(id)
       this.id = id
@@ -41,8 +47,7 @@ export class Server {
           }
         })
       })
-      //@ts-ignore
-      st.serverList.push(this)
+      roomStore.serverList.push(this)
       open(id)
     })
   }

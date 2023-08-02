@@ -3,32 +3,83 @@ import postCssPxToRem from "postcss-pxtorem";
 import autoprefixer from "autoprefixer";
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import Icons from 'unplugin-icons/vite';
+import IconsResolver from 'unplugin-icons/resolver';
+
 import tailwindcss from 'tailwindcss';
 import vueJsx from '@vitejs/plugin-vue-jsx'
-// https://vitejs.dev/config/
+import legacyPlugin from '@vitejs/plugin-legacy'
+
 export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [
+        ElementPlusResolver(),
+        IconsResolver({
+          prefix: "Icon"
+        })
+      ],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [
+        ElementPlusResolver(),
+        IconsResolver({
+          enabledCollections: ["ep"]
+        })
+      ],
     }),
+    Icons({
+      autoInstall: true
+    }),
+    legacyPlugin({
+      targets: ['defaults', 'ie >= 11', 'chrome 52'],  //需要兼容的目标列表，可以设置多个
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      renderLegacyChunks: true,
+      polyfills: [
+        'es.symbol',
+        'es.array.filter',
+        'es.promise',
+        'es.promise.finally',
+        'es/map',
+        'es/set',
+        'es.array.for-each',
+        'es.object.define-properties',
+        'es.object.define-property',
+        'es.object.get-own-property-descriptor',
+        'es.object.get-own-property-descriptors',
+        'es.object.keys',
+        'es.object.to-string',
+        'web.dom-collections.for-each',
+        'esnext.global-this',
+        'esnext.string.match-all'
+      ]
+    })
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@t': fileURLToPath(new URL('./src/types', import.meta.url))
     }
   },
   css: {
     postcss: {
       plugins: [
-        tailwindcss(),
+        tailwindcss({
+          content: [
+            "./index.html",
+            "./src/**/*.{vue,js,ts,jsx,tsx}",
+          ],
+          theme: {
+            extend: {},
+          },
+          plugins: [],
+        }),
         postCssPxToRem({
           // 自适应，px>rem转换
           rootValue: 16, // 1rem的大小
@@ -48,5 +99,20 @@ export default defineConfig({
       ],
     },
   },
-  base:"./"
+  server: {
+    host: true,
+    proxy: {
+      "/api": "https://www.jmapinode1.cc",
+    },
+  },
+  build: {
+    terserOptions: {
+      //打包后移除console和注释
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+  },
+  base: "./"
 })

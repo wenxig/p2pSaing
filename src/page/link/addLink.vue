@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useLinkStore } from '@/stores/link.ts';
 import ClipboardJS from 'clipboard';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus';
 const router = useRouter()
 const LinkStore = useLinkStore()
 let linkId = ref("")

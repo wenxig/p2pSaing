@@ -6,7 +6,7 @@ import saingPop from '@/components/saingPop.vue';
 import { linker } from '@/assets/linker';
 import inputArea from '@/components/inputArea.vue';
 import { DataConnection } from 'peerjs';
-import { Link } from '@/link';
+import { Link } from '@t/link';
 const route = useRoute()
 const linkStore = useLinkStore()
 const thisLink = linkStore.userList.find((d) => {
@@ -96,3 +96,4 @@ function showLeftbar() {
     </el-main>
   </el-container>
 </template>
+@/types/link

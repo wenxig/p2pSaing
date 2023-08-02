@@ -19,6 +19,8 @@ declare module 'vue' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    IEpMoreFilled: typeof import('~icons/ep/more-filled')['default']
+    IEpPicture: typeof import('~icons/ep/picture')['default']
     InputArea: typeof import('./src/components/inputArea.vue')['default']
     LeftBar: typeof import('./src/components/leftBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

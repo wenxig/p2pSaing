@@ -1,6 +1,6 @@
 <script setup lang='ts'>
-import { Link } from '@/link';
-import { Room } from '@/room';
+import { Link } from '@t/link';
+import { Room } from '@t/room';
 import { reactive } from 'vue';
 
 const props = defineProps<{
@@ -60,10 +60,10 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
         <div
           class=" flex justify-center items-center w-full h-full bg-[var(--el-fill-color-light)] text-[var(--el-text-color-secondary)] text-[30px]">
           <el-icon size="30px">
-            <Picture />
+            <i-ep-Picture />
           </el-icon>
         </div>
       </template>
     </el-image>
   </div>
-</template>
+</template>@/types/link@/types/room
