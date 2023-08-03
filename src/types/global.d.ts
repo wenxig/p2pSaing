@@ -8,4 +8,8 @@ declare global {
     find<S extends T>(predicate: (value: T, index: number, obj: Array<T>) => value is S, thisArg?: any): S;
     find(predicate: (value: T, index: number, obj: Array<T>) => unknown, thisArg?: any): T;
   }
+  interface Window{
+    mozRtcPeerConnection: RTCPeerConnection
+    webkitRTCPeerConnection: RTCPeerConnection
+  }
 }

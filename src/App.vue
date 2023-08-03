@@ -1,12 +1,12 @@
 <script setup lang="tsx">
 import leftBar from '@/components/leftBar.vue';
 import { ElNotification } from 'element-plus';
-import { provide, ref } from 'vue';
+import { nextTick, provide, ref } from 'vue';
+import { setTitleBar } from '@t/symbol';
 import { useLinkStore } from '@/stores/link.ts';
-const linkStore = useLinkStore()
 import { useRouter } from 'vue-router';
-const router=useRouter()
-provide("requitPleses", show)
+const router = useRouter()
+const linkStore = useLinkStore()
 function show(id: string, notreq: () => void, okreq: () => void) {
   let notificationEl = (<>
     <p>id:{id}</p>
@@ -41,6 +41,19 @@ linkStore.onConnection((id, yes, no) => {
     router.push(`/link/${id}`)
   })
 })
+
+let titleBarVnode: JSX.Element = (<div></div>)
+let showTb=ref(true)
+function setTitleBarVnode(vnode: JSX.Element) {
+  showTb.value=false
+  titleBarVnode = (<>
+    {vnode}
+  </>)
+  nextTick(() => {
+    showTb.value = true
+  })
+}
+provide(setTitleBar, setTitleBarVnode)
 </script>
 
 <template>
@@ -48,11 +61,16 @@ linkStore.onConnection((id, yes, no) => {
     <el-aside class="aside border-r-[1px] border-solid border-[#79bbff] h-full relative !w-1/4 hidden md:block">
       <left-bar></left-bar>
     </el-aside>
-    <router-view class=" !w-3/4" :key="($route.params.id as string)"></router-view>
-    <el-icon class=" !fixed right-1 top-[1.875rem] translate-y-[-50%] md:!hidden block" size="2rem"
-      @click="leftBarShow = true" v-if="!$route.path.includes('/saing/')">
-      <MoreFilled />
-    </el-icon>
+    <el-container>
+      <el-header class=" flex items-center relative bg-[#FAFCFF] text-sm md:text-lg">
+        <titleBarVnode v-if="showTb"/>
+        <el-icon class=" md:!hidden block !absolute right-1" size="2rem" @click="leftBarShow = true"
+          v-if="!$route.path.includes('/saing/')">
+          <i-ep-MoreFilled />
+        </el-icon>
+      </el-header>
+      <router-view :key="($route.params.id as string)"></router-view>
+    </el-container>
   </el-container>
   <el-drawer v-model="leftBarShow" title="菜单" direction="ltr" class=" md:!hidden">
     <left-bar class=" !w-full md:hidden block" @click="leftBarShow = false"></left-bar>

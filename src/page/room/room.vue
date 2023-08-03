@@ -1,16 +1,19 @@
-<script setup lang="ts">
-import { inject, nextTick, ref, Ref } from 'vue';
+<script setup lang="tsx">
+import { inject, nextTick, ref, type Ref } from 'vue';
 import { useLinkStore } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
 import saingPop from '@/components/saingPop.vue';
 import { linker as Linker } from '@/assets/linker';
 import inputArea from '@/components/inputArea.vue';
 import { Room } from '@t/room';
+import { setTitleBar } from '@t/symbol';
+
 const route = useRoute()
 const linkStore = useLinkStore()
 const thisRoom = linkStore.roomList.find((v) => {
   return v.id == route.params.id
 })
+
 
 class Roomer extends Linker {
   connForThey = thisRoom.connForThey
@@ -56,7 +59,12 @@ class Roomer extends Linker {
   }
 }
 const roomer = new Roomer()
-
+const setTitle = inject(setTitleBar)
+if (setTitle) {
+  setTitle(<div class=" flex items-center relative bg-[#FAFCFF] text-sm md:text-lg" onClick={() => showLeftbar}>
+    <span>{roomer.id}</span>
+  </div>)
+}
 const leftBarShow = inject('leftBarShow') as Ref<boolean>
 function showLeftbar() {
   if (screen.availWidth < 768) {
@@ -67,14 +75,8 @@ function showLeftbar() {
 </script>
 
 <template>
-  <el-container>
-    <el-header class=" flex items-center relative bg-[#FAFCFF] text-sm md:text-lg" @click="showLeftbar()">
-      {{ roomer.id }}
-      <el-button class=" absolute right-2" type="warning" plain @click.stop="roomer.disconnected()">结束连接</el-button>
-    </el-header>
-    <el-main class="main relative !pb-[13rem] ">
-      <saingPop :msg="thisRoom.msg" />
-      <inputArea :player="roomer" />
-    </el-main>
-  </el-container>
+  <el-main class="main relative !pb-[13rem] ">
+    <saingPop :msg="thisRoom.msg" />
+    <inputArea :player="roomer" />
+  </el-main>
 </template>

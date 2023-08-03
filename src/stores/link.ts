@@ -9,33 +9,31 @@ export const useLinkStore = defineStore('link', () => {
   const roomList: Room.RoomListType[] = reactive([])
   const peerObj = reactive(new Peer())
   const myId = ref("")
-  let countOfOnConnection = 0
-  peerObj.on("open", (id) => {
+  peerObj.once("open", (id) => {
     myId.value = id
+    peerObj.on('disconnected',()=>{
+      peerObj.reconnect()
+    })
   })
 
   function onConnection(callback: (id: string, yes: () => DataConnection, no: () => void) => void) {
-    if (countOfOnConnection < 1) {
-      countOfOnConnection++
-      peerObj.once("connection", (connForThey: DataConnection) => {
-        callback(connForThey.peer, () => {
-          connForThey.send({
-            ok: true
-          })
-          addToLinklist(connForThey)
-          return connForThey
-        }, () => {
-          connForThey.send({
-            ok: false
-          })
-          connForThey.close()
+    peerObj.once("connection", (connForThey: DataConnection) => {
+      callback(connForThey.peer, () => {
+        connForThey.send({
+          ok: true
         })
+        addToLinklist(connForThey)
+        return connForThey
+      }, () => {
+        connForThey.send({
+          ok: false
+        })
+        connForThey.close()
       })
-    }
+    })
   }
   function linkto(id: string, yes: (id: string, conn: DataConnection) => void, no: () => void, isRoom?: boolean): () => void {
     const connForThey = peerObj.connect(id)
-    console.log(connForThey.open)
     connForThey.once('open', () => {
       if (isRoom) {
         connForThey.send({ type: 'join' })
@@ -84,7 +82,6 @@ export const useLinkStore = defineStore('link', () => {
   function endLink(connForThey: DataConnection) {
     connForThey.close()
     peerObj.off("connection")
-    countOfOnConnection = 0
   }
   return { roomList, userList, peerObj, myId, onConnection, linkto, addToLinklist, endLink }
 })

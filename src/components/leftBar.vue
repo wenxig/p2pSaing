@@ -12,14 +12,23 @@ const linkStore = useLinkStore()
     <el-card shadow="never" class=" !p-0 mb-1" v-for="(conn, index) in linkStore.userList" :key="index"
       :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : conn.isDisconnected ? '#E4E7ED' : '' }"
       @click="$emit('click', void $router.push(`/link/${conn.id}`))">{{ conn.id }}</el-card>
-    <el-button icon="i-ep-Plus" class=" w-full !h-10 mt-2 mb-1" @click="$emit('click', void $router.push('/link'))">发起连接</el-button>
+    <el-button class=" w-full !h-10 mt-2 mb-1" @click="$emit('click', void $router.push('/link'))">
+      <el-icon>
+        <i-ep-Plus />
+      </el-icon>
+      发起连接
+    </el-button>
 
     <el-card shadow="never" class=" !p-0 mb-1 mt-3" v-for="(conn, index) in linkStore.roomList" :key="index"
       :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : '' }"
       @click="$emit('click', void $router.push(`/link/${conn.id}`))">{{ conn.id }}</el-card>
 
-    <el-button icon="i-ep-Plus" class=" w-full !h-10 mt-2 !ml-0"
-      @click="$emit('click', void $router.push('/room'))">连接群聊</el-button>
+    <el-button class=" w-full !h-10 mt-2 !ml-0" @click="$emit('click', void $router.push('/room'))">
+      <el-icon>
+        <i-ep-Plus />
+      </el-icon>
+      连接群聊
+    </el-button>
   </el-main>
 </template>
 

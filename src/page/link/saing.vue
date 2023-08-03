@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import { ref, inject, type Ref, nextTick } from 'vue';
 import { useLinkStore } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
@@ -7,12 +7,12 @@ import { linker } from '@/assets/linker';
 import inputArea from '@/components/inputArea.vue';
 import { DataConnection } from 'peerjs';
 import { type Link } from '@t/link';
+import { setTitleBar } from '@t/symbol';
 const route = useRoute()
 const linkStore = useLinkStore()
 const thisLink = linkStore.userList.find((d) => {
   return route.params.id == d.id
 })
-console.log(thisLink.connForThey.peer,thisLink.connForThey.open);
 
 class peerMember extends linker {
   connForThey = thisLink.connForThey as DataConnection
@@ -23,8 +23,6 @@ class peerMember extends linker {
   endLink = useLinkStore().endLink
   constructor() {
     super()
-    console.log(this.connForThey.peer, this.connForThey.open);
-
     this.connForThey.off('data')
     //@ts-ignore
     this.connForThey.on('data', (data: Link.MsgType) => {
@@ -33,10 +31,22 @@ class peerMember extends linker {
     });
 
     //连接断开监听
-    this.connForThey.off('c')
+    this.connForThey.off('close')
     this.connForThey.once("close", () => {
       this.disconnected()
     })
+
+    const setTitle = inject(setTitleBar)
+    if (setTitle) {
+      setTitle(<div class=" w-full h-full flex items-center" onClick={() => { showLeftbar() }}>
+        {thisLink.id}
+        <el-button class=" absolute right-2" type="warning" plain onClick={(e: MouseEvent) => {
+          alert(e)
+          e.stopPropagation();
+          player.disconnected()
+        }} disabled={thisLink.isDisconnected}>结束连接</el-button>
+      </div>)
+    }
   }
   public send(str: string, type?: "text" | "img", blob?: Blob) {
     str = str.trim()
@@ -47,7 +57,7 @@ class peerMember extends linker {
         is: "my",
         type: type ?? "text",
         blob
-      } as any
+      }
       this.connForThey.send(msgObj)
       this.msg.push(msgObj)
       nextTick(() => {
@@ -77,8 +87,6 @@ class peerMember extends linker {
 }
 const player = new peerMember()
 
-
-
 const leftBarShow = inject('leftBarShow') as Ref<boolean>
 function showLeftbar() {
   if (screen.availWidth < 768) {
@@ -88,15 +96,8 @@ function showLeftbar() {
 </script>
 
 <template>
-  <el-container>
-    <el-header class=" flex items-center relative bg-[#FAFCFF] text-sm md:text-lg" @click="showLeftbar()">
-      {{ thisLink.id }}
-      <el-button class=" absolute right-2" type="warning" plain @click.stop="player.disconnected()"
-        :disabled="thisLink.isDisconnected">结束连接</el-button>
-    </el-header>
-    <el-main class="main relative !pb-[13rem] " id="saingMain">
-      <saingPop :msg="thisLink.msg" />
-      <inputArea :player="player" />
-    </el-main>
-  </el-container>
+  <el-main class="main relative !pb-[13rem] " id="saingMain">
+    <saingPop :msg="thisLink.msg" />
+    <inputArea :player="player" />
+  </el-main>
 </template>
