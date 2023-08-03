@@ -19,8 +19,6 @@ try {
 if (!isWebrtcOk) {
   ElMessage.error('你的浏览器不支持webrtc')
 }
-
-
 </script>
 
 <template>

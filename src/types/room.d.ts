@@ -14,7 +14,18 @@ declare namespace Room {
     is: "sys" | "my" | "they",
     md5?: string,
     serverId: [string, string],
-    time:Date,
+    time: Date,
     blob?: Blob
+  }
+  interface options {
+    id?: string
+    maxUser?: number
+    for?:'link'|'join'
+  }
+  type joinData = {
+    ok:boolean
+    server?:boolean
+    isServer?:boolean
+    type:'join'|'link'
   }
 }

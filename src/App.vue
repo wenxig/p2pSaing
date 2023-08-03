@@ -51,7 +51,7 @@ linkStore.onConnection((id, yes, no) => {
     <router-view class=" !w-3/4" :key="($route.params.id as string)"></router-view>
     <el-icon class=" !fixed right-1 top-[1.875rem] translate-y-[-50%] md:!hidden block" size="2rem"
       @click="leftBarShow = true" v-if="!$route.path.includes('/saing/')">
-      <i-ep-MoreFilled />
+      <MoreFilled />
     </el-icon>
   </el-container>
   <el-drawer v-model="leftBarShow" title="菜单" direction="ltr" class=" md:!hidden">

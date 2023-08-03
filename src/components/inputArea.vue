@@ -36,7 +36,7 @@ function uploadFile() {
 <template>
   <div class=" fixed w-full md:!w-3/4 bottom-0 right-0 h-[12rem] md:h-[13rem] bg-white">
     <el-icon size="1.5rem" class=" !absolute z-30 right-2 top-2" @click="uploadFile">
-      <PictureFilled :color="iconColor" class=" hover:!text-[#79bbff] !transition-colors duration-500 ease-in-out" />
+      <i-ep-PictureFilled :color="iconColor" class=" hover:!text-[#79bbff] !transition-colors duration-500 ease-in-out" />
     </el-icon>
     <el-input spellcheck="false" placeholder="massage" v-model="player.tomsg.value"
       class=" !m-0 h-40 !border-l-0 z-0 !w-full" @mouseenter="iconColor = '#c8c9cc'"

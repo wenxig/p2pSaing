@@ -66,4 +66,4 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
       </template>
     </el-image>
   </div>
-</template>@/types/link@/types/room
+</template>

@@ -1,11 +1,12 @@
 import { Link } from '@t/link'
+import { Room } from '@t/room'
 import Peer, { type DataConnection } from 'peerjs'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
-import { useRoomStore } from './room';
+
 export const useLinkStore = defineStore('link', () => {
   const userList: Link.RoomListType[] = reactive([])
-  const userIdList: string[] = reactive([])
+  const roomList: Room.RoomListType[] = reactive([])
   const peerObj = reactive(new Peer())
   const myId = ref("")
   let countOfOnConnection = 0
@@ -32,25 +33,26 @@ export const useLinkStore = defineStore('link', () => {
       })
     }
   }
-  function linkto(id: string, yes: (id: string) => void, no: () => void, isRoom?: boolean): () => void {
-    const room = useRoomStore()
+  function linkto(id: string, yes: (id: string, conn: DataConnection) => void, no: () => void, isRoom?: boolean): () => void {
     const connForThey = peerObj.connect(id)
+    console.log(connForThey.open)
     connForThey.once('open', () => {
       if (isRoom) {
         connForThey.send({ type: 'join' })
       }
-      //@ts-ignore
-      connForThey.once("data", (d: { ok: boolean, server?: boolean }) => {
-        if (d.ok) {
-          if (d.server) {
-            room.addToRoomlist(connForThey)
+      console.log(connForThey.open)
+
+      connForThey.once("data", (d) => {
+        const data = d as Room.joinData
+        alert('on data', data);
+        if (data.ok) {
+          if (data.server) {
+            addToRoomlist(connForThey)
           } else {
             addToLinklist(connForThey)
           }
-          yes(id)
-          connForThey.once('close', () => {
-            delelyToLinklist(connForThey.peer)
-          })
+          console.log(connForThey.open)
+          yes(id, connForThey)
         } else {
           connForThey.close()
           no()
@@ -71,20 +73,18 @@ export const useLinkStore = defineStore('link', () => {
       islink: true,
       isDisconnected: false
     })
-    userIdList.push(connForThey.peer)
   }
-
-  function delelyToLinklist(id: string | DataConnection) {
-    if (typeof id === "string") {
-      userList.splice(userIdList.indexOf(id), 1)
-    } else {
-      userList.splice(userIdList.indexOf(id.peer), 1)
-    }
+  function addToRoomlist(connForThey: DataConnection) {
+    roomList.push({
+      id: connForThey.peer,
+      msg: [],
+      connForThey
+    })
   }
-
   function endLink(connForThey: DataConnection) {
     connForThey.close()
     peerObj.off("connection")
+    countOfOnConnection = 0
   }
-  return { userList, peerObj, myId, onConnection, linkto, addToLinklist, endLink, userIdList, delelyToLinklist }
+  return { roomList, userList, peerObj, myId, onConnection, linkto, addToLinklist, endLink }
 })

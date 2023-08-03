@@ -1,12 +1,10 @@
 <script setup lang='ts'>
 import { ref } from 'vue';
-import { Server, useRoomStore } from '@/stores/room.ts';
+import { Server } from '@/stores/server.ts';
 import { useLinkStore } from '@/stores/link.ts';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus'
 const linkStore = useLinkStore()
-const roomStore = useRoomStore()
-
 const router = useRouter()
 let linkId = ref("")
 
@@ -29,8 +27,7 @@ function newServer() {
       router.push(`/room/${id}`)
       ElMessage("等待页面加载")
     }, () => { alert("no") }, true)
-  }, roomStore)
-
+  },{})
 }
 
 </script>
@@ -51,4 +48,4 @@ function newServer() {
       <el-button @click="newServer" class="w-full md:w-1/4">创建</el-button>
     </el-main>
   </el-container>
-</template>
+</template>@/stores/server

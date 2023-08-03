@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref, inject, Ref, nextTick } from 'vue';
+import { ref, inject, type Ref, nextTick } from 'vue';
 import { useLinkStore } from '@/stores/link.ts';
 import { useRoute } from 'vue-router';
 import saingPop from '@/components/saingPop.vue';
 import { linker } from '@/assets/linker';
 import inputArea from '@/components/inputArea.vue';
 import { DataConnection } from 'peerjs';
-import { Link } from '@t/link';
+import { type Link } from '@t/link';
 const route = useRoute()
 const linkStore = useLinkStore()
 const thisLink = linkStore.userList.find((d) => {
   return route.params.id == d.id
 })
+console.log(thisLink.connForThey.peer,thisLink.connForThey.open);
+
 class peerMember extends linker {
   connForThey = thisLink.connForThey as DataConnection
   tomsg = ref("")
@@ -21,6 +23,8 @@ class peerMember extends linker {
   endLink = useLinkStore().endLink
   constructor() {
     super()
+    console.log(this.connForThey.peer, this.connForThey.open);
+
     this.connForThey.off('data')
     //@ts-ignore
     this.connForThey.on('data', (data: Link.MsgType) => {
@@ -29,7 +33,7 @@ class peerMember extends linker {
     });
 
     //连接断开监听
-    this.connForThey.off('close')
+    this.connForThey.off('c')
     this.connForThey.once("close", () => {
       this.disconnected()
     })
@@ -96,4 +100,3 @@ function showLeftbar() {
     </el-main>
   </el-container>
 </template>
-@/types/link
