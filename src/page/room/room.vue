@@ -17,6 +17,7 @@ const thisRoom = linkStore.roomList.find((v) => {
 
 class Roomer extends Linker {
   connForThey = thisRoom.connForThey
+  connForThey2 = thisRoom.connForThey2
   islink?: boolean | undefined;
   id = route.params.id
   tomsg = ref("")
@@ -24,11 +25,11 @@ class Roomer extends Linker {
   constructor() {
     super();
     this.connForThey.off('data')
-    //@ts-ignore
-    this.connForThey.on('data', (data: Room.MsgType) => {
+    this.connForThey.on('data', (d) => {
+      const data=d as Room.MsgType
       data.is = 'they'
       this.msg.push(data)
-    });
+    });    
   }
   public send(str: string, type?: "text" | "img", blob?: Blob) {
     str = str.trim();
@@ -41,6 +42,7 @@ class Roomer extends Linker {
         blob
       } as Room.MsgType;
       this.connForThey.send(msgObj);
+      this.connForThey2.send(msgObj);
       this.msg.push(msgObj);
       nextTick(() => {
         const sayer = document.getElementById("saingMain");

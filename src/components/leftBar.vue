@@ -18,10 +18,9 @@ const linkStore = useLinkStore()
       </el-icon>
       发起连接
     </el-button>
-
     <el-card shadow="never" class=" !p-0 mb-1 mt-3" v-for="(conn, index) in linkStore.roomList" :key="index"
       :body-style="{ 'background-color': $route.params.id == conn.id ? '#d9ecff' : '' }"
-      @click="$emit('click', void $router.push(`/link/${conn.id}`))">{{ conn.id }}</el-card>
+      @click="$emit('click', void $router.push(`/room/${conn.id}`))">{{ conn.id }}</el-card>
 
     <el-button class=" w-full !h-10 mt-2 !ml-0" @click="$emit('click', void $router.push('/room'))">
       <el-icon>

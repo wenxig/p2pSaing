@@ -6,8 +6,9 @@ declare namespace Room {
     id: string,
     msg: MsgType[],
     connForThey: DataConnection
+    connForThey2: DataConnection
   }
-  interface MsgType {
+  type MsgType ={
     from: string,
     msg: string,
     type: "text" | "img",
@@ -15,9 +16,10 @@ declare namespace Room {
     md5?: string,
     serverId: [string, string],
     time: Date,
-    blob?: Blob
+    blob?: Blob,
+    uptoServer?:boolean
   }
-  interface options {
+  type options ={
     id?: string
     maxUser?: number
     for?:'link'|'join'

@@ -31,7 +31,7 @@ onMounted(() => {
   }, { immediate: true })
 
 })
-function link() {
+async function link() {
   let waiting = ElMessage({
     message: '等待对方同意连接',
     duration: 0
@@ -40,7 +40,7 @@ function link() {
     ElMessage.error('等待连接超时')
     endWite()
   }, 10000);
-  let endWaitingLink = linkStore.linkto(linkId.value, (id) => {
+  let endWaitingLink = await linkStore.linkto(linkId.value, (id) => {
     ElMessage.success('对方同意了连接')
     ElMessage("等待页面加载")
     router.push(`/link/${id}`)

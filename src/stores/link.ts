@@ -3,6 +3,7 @@ import { Room } from '@t/room'
 import Peer, { type DataConnection } from 'peerjs'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
+import { Server } from './server'
 
 export const useLinkStore = defineStore('link', () => {
   const userList: Link.RoomListType[] = reactive([])
@@ -11,7 +12,7 @@ export const useLinkStore = defineStore('link', () => {
   const myId = ref("")
   peerObj.once("open", (id) => {
     myId.value = id
-    peerObj.on('disconnected',()=>{
+    peerObj.on('disconnected', () => {
       peerObj.reconnect()
     })
   })
@@ -32,32 +33,64 @@ export const useLinkStore = defineStore('link', () => {
       })
     })
   }
-  function linkto(id: string, yes: (id: string, conn: DataConnection) => void, no: () => void, isRoom?: boolean): () => void {
+  async function linkto(id: string, yes: (id: string, conn: DataConnection) => void, no: () => void, isRoom?: boolean) {
     const connForThey = peerObj.connect(id)
-    connForThey.once('open', () => {
-      if (isRoom) {
-        connForThey.send({ type: 'join' })
-      }
-      console.log(connForThey.open)
-
-      connForThey.once("data", (d) => {
-        const data = d as Room.joinData
-        alert('on data', data);
-        if (data.ok) {
-          if (data.server) {
-            addToRoomlist(connForThey)
-          } else {
-            addToLinklist(connForThey)
+    const main = () => {
+      return new Promise((reolved) => {
+        connForThey.once('open', () => {
+          if (isRoom) {
+            connForThey.send({ type: 'join' })
           }
-          console.log(connForThey.open)
-          yes(id, connForThey)
-        } else {
-          connForThey.close()
-          no()
-        }
+          connForThey.once("data", async (d) => {
+            const data = d as Room.joinData
+            if (data.ok) {
+              alert(data)
+              if (data.server) {
+                let connForThey2 = peerObj.connect(id)
+                if (data.isServer) {
+                  connForThey2 = await newServer()
+                } else {
+                  connForThey2 = peerObj.connect(id)
+                }
+                connForThey2.once('open', () => {
+                  reolved(addToRoomlist(connForThey, connForThey2))
+                })
+              } else {
+                reolved(addToLinklist(connForThey))
+              }
+            } else {
+              connForThey.close()
+              no()
+            }
+          })
+        })
       })
-    })
+    }
+    await main()
+    yes(id, connForThey)
 
+    function newServer(): Promise<DataConnection> {
+      const serid = connForThey.peer.startsWith("2-") ? connForThey.peer.substring(2) : "2-" + connForThey.peer
+      return new Promise((resolve) => {
+        const ser = new Server(() => {
+          console.log(connForThey.peer, serid)
+          ser.otherServer = ser.peerObj.connect(connForThey.peer)
+          alert('ser.otherServer:',ser.otherServer)
+          ser.otherServer.on('open', () => {
+            ser.otherServer?.on('data', (d) => {
+              console.log('online:', true, d)
+              ser.otherServer?.send({ online: true })
+            })
+            
+            if (ser.otherServer) {
+              resolve(ser.otherServer)
+            }
+          })
+        }, {
+          id: serid,
+        })
+      })
+    }
     return () => {
       connForThey.off("data")
       connForThey.close()
@@ -72,11 +105,12 @@ export const useLinkStore = defineStore('link', () => {
       isDisconnected: false
     })
   }
-  function addToRoomlist(connForThey: DataConnection) {
+  function addToRoomlist(connForThey: DataConnection, connForThey2: DataConnection) {
     roomList.push({
       id: connForThey.peer,
       msg: [],
-      connForThey
+      connForThey,
+      connForThey2
     })
   }
   function endLink(connForThey: DataConnection) {

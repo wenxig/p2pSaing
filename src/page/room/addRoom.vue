@@ -14,8 +14,8 @@ const setTitle = inject(setTitleBar)
 if (setTitle) {
   setTitle(h('span', '群聊'))
 }
-function link() {
-  linkStore.linkto(linkId.value, (id) => {
+async function link() {
+  await linkStore.linkto(linkId.value, (id) => {
     router.push(`/room/${id}`)
     ElMessage("等待页面加载")
   }, () => { }, true)
@@ -26,10 +26,10 @@ function newServer() {
     message: "等待服务程序启动",
     duration: 0
   })
-  new Server((id) => {
+  new Server(async (id) => {
     wattingReadyMsg.close()
     stop()
-    linkStore.linkto(id, () => {
+    await linkStore.linkto(id, () => {
       router.push(`/room/${id}`)
       ElMessage("等待页面加载")
     }, () => { alert("no") }, true)
