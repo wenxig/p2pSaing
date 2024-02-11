@@ -4,11 +4,12 @@ import Peer, { type DataConnection } from 'peerjs'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import { Server } from './server'
+import { random } from 'lodash-es'
 
 export const useLinkStore = defineStore('link', () => {
   const userList: Link.RoomListType[] = reactive([])
   const roomList: Room.RoomListType[] = reactive([])
-  const peerObj = reactive(new Peer())
+  const peerObj = reactive(new Peer(`p2psaing_${random(10000000)}`))
   const myId = ref("")
   peerObj.once("open", (id) => {
     myId.value = id
@@ -34,7 +35,7 @@ export const useLinkStore = defineStore('link', () => {
     })
   }
   async function linkto(id: string, yes: (id: string, conn: DataConnection) => void, no: () => void, isRoom?: boolean) {
-    const connForThey = peerObj.connect(id)
+    const connForThey = peerObj.connect(`p2psaing_${id}`)
     const main = () => {
       return new Promise((reolved) => {
         connForThey.once('open', () => {
@@ -46,11 +47,11 @@ export const useLinkStore = defineStore('link', () => {
             if (data.ok) {
               alert(data)
               if (data.server) {
-                let connForThey2 = peerObj.connect(id)
+                let connForThey2 = peerObj.connect(`p2psaing_${id}`)
                 if (data.isServer) {
                   connForThey2 = await newServer()
                 } else {
-                  connForThey2 = peerObj.connect(id)
+                  connForThey2 = peerObj.connect(`p2psaing_${id}`)
                 }
                 connForThey2.once('open', () => {
                   reolved(addToRoomlist(connForThey, connForThey2))
@@ -75,13 +76,13 @@ export const useLinkStore = defineStore('link', () => {
         const ser = new Server(() => {
           console.log(connForThey.peer, serid)
           ser.otherServer = ser.peerObj.connect(connForThey.peer)
-          alert('ser.otherServer:',ser.otherServer)
+          alert('ser.otherServer:', ser.otherServer)
           ser.otherServer.on('open', () => {
             ser.otherServer?.on('data', (d) => {
               console.log('online:', true, d)
               ser.otherServer?.send({ online: true })
             })
-            
+
             if (ser.otherServer) {
               resolve(ser.otherServer)
             }

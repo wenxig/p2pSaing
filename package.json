@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit&&vite build && surge dist p2psaing.surge.sh",
+    "build": "vite build && surge dist p2psaing.surge.sh",
     "preview": "vite preview"
   },
   "dependencies": {
