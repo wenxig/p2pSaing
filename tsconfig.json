@@ -34,7 +34,7 @@
     "types": [
       "element-plus/global",
     ],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
   },
   "include": [
     "src/**/*.ts",

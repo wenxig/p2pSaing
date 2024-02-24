@@ -19,14 +19,14 @@ onMounted(() => {
           const el = e.target as HTMLSpanElement
           new ClipboardJS(el, {
             text: function () {
-              return linkStore.myId;
+              return linkStore.myId.replace('p2psaing_', '');
             }
           });
           el.click()
         }}>
-          你的id: {v}
+          你的id: {v.replace('p2psaing_', '')}
         </span>
-      </el-tooltip>)
+      </el-tooltip>) as any
     }
   }, { immediate: true })
 
